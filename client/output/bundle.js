@@ -26531,6 +26531,7 @@ exports.default = function () {
 	var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
 	var action = arguments[1];
 
+	console.log("From reducer", action);
 	switch (action.type) {
 		case "ALL_ROOMS":
 			return action.payload;
