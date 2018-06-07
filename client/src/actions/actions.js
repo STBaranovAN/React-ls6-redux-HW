@@ -27,14 +27,14 @@ export function getRooms(){
 		}
 };
 
-export function selectRoom(roomId){
+export function selectRoom(currentRoom){
 
-	if(!roomId)
+	if(!currentRoom)
 		return;
 
 	return function(dispatch){
 		let messages = [];
-			axios.get(`http://localhost:6060/api/${roomId}/messages`).then( responseObj => {
+			axios.get(`http://localhost:6060/api/${currentRoom.id}/messages`).then( responseObj => {
 
 				// if(responseObj.hasOwnProperty("data"))
 				// {

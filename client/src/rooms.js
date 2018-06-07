@@ -46,18 +46,19 @@ class Rooms extends React.Component {
 								return <Room
 										key={index} name={item.name} 
 										onClick={() => { 
-											this.props.selectRoom(item.id);
+											this.props.selectRoom(item);
 										}}
 									/>
-							})}
-						</ul>
+							})
+						}
+						</ul>	
 			</div>
 		)
 	}
 }
 
 function mapStateToProps(state){
-	return {allRooms: state.allRooms}
+	return {chatRooms: state.allRooms}
 }
 
 function mapDispatchToProps(dispatch){

@@ -25963,13 +25963,13 @@ function getRooms() {
 	};
 };
 
-function selectRoom(roomId) {
+function selectRoom(currentRoom) {
 
-	if (!roomId) return;
+	if (!currentRoom) return;
 
 	return function (dispatch) {
 		var messages = [];
-		_axios2.default.get("http://localhost:6060/api/" + roomId + "/messages").then(function (responseObj) {
+		_axios2.default.get("http://localhost:6060/api/" + currentRoom.id + "/messages").then(function (responseObj) {
 
 			// if(responseObj.hasOwnProperty("data"))
 			// {
@@ -26201,42 +26201,23 @@ var Messages = function (_React$Component) {
 
 		_this.state = {
 			currentRoomName: null,
-			allMessages: []
+			roomMessages: []
 		};
 		return _this;
 	}
 
-	/* componentDidMount(){
- 	if(this.props.selectedRoom) {
- 		this.setState({currentRoomId: nextProps.selectedRoom.id});
- 	}
- } */
-
-	// componentWillReceiveProps(nextProps){
-	// 	if(nextProps.selectedRoom)
-	// 	{
-	// 		this.setState({currentRoomName: nextProps.selectedRoom.name});
-	// 		this.getRoomMessages(nextProps.selectedRoom.id);
-	// 	}
-	// }
-
 	_createClass(Messages, [{
-		key: "componentWillReceiveProps",
-		value: function componentWillReceiveProps(nextProps) {
-			console.log(nextProps);
+		key: "componentDidUpdate",
+		value: function componentDidUpdate() {
+			console.log("From DID UPDATE", this.props.roomMessages);
 		}
-
-		/* shouldComponentUpdate(nextProps, nextState){
-  	return false;
-  } */
-
 	}, {
 		key: "render",
 		value: function render() {
 
 			// let error = this.state.err || false;
 			// let roomName = this.state.currentRoomName || "Choose a room";
-			var allMessages = this.props.allMessages || [];
+			var roomMessages = this.props.roomMessages || [];
 
 			// if(error) {
 			// 	return (<div className="messages">
@@ -26245,7 +26226,7 @@ var Messages = function (_React$Component) {
 			// 	)
 			// }
 
-			if (allMessages.length == 0) {
+			if (roomMessages.length == 0) {
 				return _react2.default.createElement(
 					"div",
 					{ className: "messages" },
@@ -26263,7 +26244,7 @@ var Messages = function (_React$Component) {
 				_react2.default.createElement(
 					"div",
 					{ className: "text-right" },
-					allMessages.map(function (item, index) {
+					roomMessages.map(function (item, index) {
 						return _react2.default.createElement(
 							"p",
 							{ key: index },
@@ -26279,7 +26260,7 @@ var Messages = function (_React$Component) {
 }(_react2.default.Component);
 
 function mapStateToProps(state) {
-	return { allMessages: state.allMessages };
+	return { roomMessages: state.roomMessages };
 }
 
 exports.default = (0, _reactRedux.connect)(mapStateToProps)(Messages);
@@ -26338,23 +26319,25 @@ var PostMsg = function (_React$Component) {
 			currentRoom: {},
 			err: false
 		};
+
+		_this.getText = _this.getText.bind(_this);
+		_this.postNewMessage = _this.postNewMessage.bind(_this);
 		return _this;
 	}
 
 	_createClass(PostMsg, [{
 		key: "getText",
 		value: function getText(e) {
-			var textAreaText = e.target.value;
-			this.setState({ msgText: textAreaText });
+			this.setState({ msgText: e.target.value });
 		}
-	}, {
-		key: "componentWillReceiveProps",
-		value: function componentWillReceiveProps(nextProps) {
-			this.setState({ currentRoom: nextProps.selectedRoom });
-		}
+
+		// componentWillReceiveProps(nextProps){
+		// 	this.setState({currentRoom: nextProps.selectedRoom});
+		// }
+
 	}, {
 		key: "postNewMessage",
-		value: function postNewMessage() {
+		value: function postNewMessage(e) {
 			var _this2 = this;
 
 			var msgText = this.state.msgText;
@@ -26424,7 +26407,7 @@ var PostMsg = function (_React$Component) {
 						_react2.default.createElement("textarea", {
 							className: "form-control",
 							value: this.state.msgText || '',
-							onChange: this.getText.bind(this)
+							onChange: this.getText
 						})
 					)
 				),
@@ -26446,7 +26429,7 @@ var PostMsg = function (_React$Component) {
 						_react2.default.createElement(
 							"button",
 							{ className: "btn btn-primary",
-								onClick: this.postNewMessage.bind(this)
+								onClick: this.postNewMessage
 							},
 							"New message"
 						)
@@ -26659,7 +26642,7 @@ var Rooms = function (_React$Component) {
 						return _react2.default.createElement(_item2.default, {
 							key: index, name: item.name,
 							onClick: function onClick() {
-								_this2.props.selectRoom(item.id);
+								_this2.props.selectRoom(item);
 							}
 						});
 					})

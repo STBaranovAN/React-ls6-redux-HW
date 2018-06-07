@@ -11,23 +11,9 @@ class Messages extends React.Component {
 		}
 	}
 
-	/* componentDidMount(){
-		if(this.props.selectedRoom) {
-			this.setState({currentRoomId: nextProps.selectedRoom.id});
-		}
-	} */
-
-	// componentWillReceiveProps(nextProps){
-	// 	if(nextProps.selectedRoom)
-	// 	{
-	// 		this.setState({currentRoomName: nextProps.selectedRoom.name});
-	// 		this.getRoomMessages(nextProps.selectedRoom.id);
-	// 	}
-	// }
-	
-	/* shouldComponentUpdate(nextProps, nextState){
-		return false;
-	} */
+	componentDidUpdate(){
+		console.log("From DID UPDATE", this.props.roomMessages);
+	}
 
 	render() {
 
