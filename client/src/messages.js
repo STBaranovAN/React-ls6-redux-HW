@@ -10,21 +10,21 @@ class Messages extends React.Component {
 	}
 
 	componentDidUpdate(){
-		console.log("From DID UPDATE", this.props.roomMessages);
+		// console.log("From DID UPDATE", this.props.roomMessages);
 	}
 
 	render() {
 
-		// let error = this.state.err || false;
+		let err = this.props.error;
 		let roomName = this.props.currentRoomName || "Choose a room";
 		let roomMessages = this.props.allMessages || [];
 
-		// if(error) {
-		// 	return (<div className="messages">
-		// 				<h2>Server error occured...</h2>
-		// 			</div>
-		// 	)
-		// }
+		if(err && err.where === "selectRoom") {
+			return (<div className="messages">
+						<h2>{err.text}</h2>
+					</div>
+			)
+		}
 		
 		if(roomMessages.length == 0) {
 			return (<div className="messages">
@@ -47,7 +47,7 @@ class Messages extends React.Component {
 }
 
 function mapStateToProps(state){
-	return {allMessages: state.roomMessages, currentRoomName: (state.selectedRoom && state.selectedRoom.name) || null}
+	return {allMessages: state.roomMessages, currentRoomName: (state.selectedRoom && state.selectedRoom.name) || null, error: state.errorObj}
 }
 
 export default connect(mapStateToProps)(Messages);

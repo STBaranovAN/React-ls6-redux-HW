@@ -1,4 +1,5 @@
 import axios from "axios";
+import uuid from "uuid";
 
 export function getRooms(){
 
@@ -14,39 +15,33 @@ export function getRooms(){
 								type: "ALL_ROOMS",
 								payload: rooms
 							});
+
+							dispatch({
+								type: "ERROR",
+								payload: null
+							});
 						}
 					}
-
-					// rooms = responseObj.data.chats;
-
-					// dispatch({
-					// 	type: "ALL_ROOMS",
-					// 	payload: rooms
-					// });
+			}, err => {
+				dispatch({
+					type: "ERROR",
+					payload: { where: "getRooms", text: "Server error occured..." }
+				});
 			});
 		}
 };
 
 export function selectRoom(currentRoom){
 
-	if(!currentRoom)
-		return;
-
 	return function(dispatch){
+
+		dispatch({
+			type: "SEL_ROOM",
+			payload: currentRoom
+		});
+
 		let messages = [];
 			axios.get(`http://localhost:6060/api/${currentRoom.id}/messages`).then( responseObj => {
-
-				// if(responseObj.hasOwnProperty("data"))
-				// {
-				// 	messages = responseObj.data;
-				// 	if(messages.length >= 0)
-				// 	{
-				// 		dispatch({
-				// 			type: "ROOM_MSGS",
-				// 			payload: messages
-				// 		});
-				// 	}
-				// }
 
 				messages = responseObj.data;
 
@@ -54,11 +49,46 @@ export function selectRoom(currentRoom){
 					type: "ROOM_MSGS",
 					payload: messages
 				});
-			});
 
+				dispatch({
+					type: "ERROR",
+					payload: null
+				});
+
+			}, err => {
+				dispatch({
+					type: "ERROR",
+					payload: { where: "selectRoom", text: "Server error occured..." }
+				});
+			});
+	}
+};
+
+export function addMessage(currentRoom, msgText){
+
+	return function(dispatch){
+
+		if(!msgText)
+		{
 			dispatch({
-				type: "SEL_ROOM",
-				payload: currentRoom
+				type: "ERROR",
+				payload: { where: "addMessage", text: "Enter message text!" }
+			});
+			return;
+		}
+
+		axios.post("http://localhost:6060/api/addmessage", {
+			text: msgText,
+			userId: 12345,
+			messageId: uuid.v4(),
+			roomId: currentRoom.id 
+			}).then( responseObj => {
+				dispatch(selectRoom(currentRoom));
+			}, err => {
+				dispatch({
+					type: "ERROR",
+					payload: { where: "addMessage", text: "Server error occured..." }
+				});
 			});
 	}
 };

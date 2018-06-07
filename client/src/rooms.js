@@ -19,17 +19,16 @@ class Rooms extends React.Component {
 	}
 	
 	render() {
-		// let error = this.state.err || false;
+		let err = this.props.error;
 		let allRooms = this.props.chatRooms || [];
-		// let currentRoom = this.state.currentRoom || {};
 
-		// if(error)		
-		// {
-		// 	return (<div className="rooms">
-		// 				<h2>Server error occured...</h2>
-		// 			</div>
-		// 	)
-		// }
+		if(err && err.where === "getRooms")		
+		{
+			return (<div className="rooms">
+						<h2>{err.text}</h2>
+					</div>
+			)
+		}
 		
 		if(allRooms.length == 0) {
 			return (<div className="rooms">
@@ -57,11 +56,11 @@ class Rooms extends React.Component {
 }
 
 function mapStateToProps(state){
-	return {chatRooms: state.allRooms}
+	return {chatRooms: state.allRooms, error: state.errorObj}
 }
 
 function mapDispatchToProps(dispatch){
-	return bindActionCreators({getRooms: getRooms, selectRoom: selectRoom}, dispatch);
+	return bindActionCreators({getRooms: getRooms, selectRoom: selectRoom }, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Rooms);
