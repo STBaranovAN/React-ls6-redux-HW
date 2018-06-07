@@ -25990,6 +25990,11 @@ function selectRoom(currentRoom) {
 				payload: messages
 			});
 		});
+
+		dispatch({
+			type: "SEL_ROOM",
+			payload: currentRoom
+		});
 	};
 };
 
@@ -26199,10 +26204,7 @@ var Messages = function (_React$Component) {
 
 		var _this = _possibleConstructorReturn(this, (Messages.__proto__ || Object.getPrototypeOf(Messages)).call(this, props));
 
-		_this.state = {
-			currentRoomName: null,
-			roomMessages: []
-		};
+		_this.state = {};
 		return _this;
 	}
 
@@ -26216,8 +26218,8 @@ var Messages = function (_React$Component) {
 		value: function render() {
 
 			// let error = this.state.err || false;
-			// let roomName = this.state.currentRoomName || "Choose a room";
-			var roomMessages = this.props.roomMessages || [];
+			var roomName = this.props.currentRoomName || "Choose a room";
+			var roomMessages = this.props.allMessages || [];
 
 			// if(error) {
 			// 	return (<div className="messages">
@@ -26242,6 +26244,11 @@ var Messages = function (_React$Component) {
 				"div",
 				{ className: "messages" },
 				_react2.default.createElement(
+					"h2",
+					null,
+					roomName
+				),
+				_react2.default.createElement(
 					"div",
 					{ className: "text-right" },
 					roomMessages.map(function (item, index) {
@@ -26260,7 +26267,7 @@ var Messages = function (_React$Component) {
 }(_react2.default.Component);
 
 function mapStateToProps(state) {
-	return { roomMessages: state.roomMessages };
+	return { allMessages: state.roomMessages, currentRoomName: state.selectedRoom && state.selectedRoom.name || null };
 }
 
 exports.default = (0, _reactRedux.connect)(mapStateToProps)(Messages);
@@ -26287,6 +26294,10 @@ var _react = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 
 var _react2 = _interopRequireDefault(_react);
 
+var _reactRedux = __webpack_require__(/*! react-redux */ "./node_modules/react-redux/es/index.js");
+
+var _redux = __webpack_require__(/*! redux */ "./node_modules/redux/es/redux.js");
+
 var _uuid = __webpack_require__(/*! uuid */ "./node_modules/uuid/index.js");
 
 var _uuid2 = _interopRequireDefault(_uuid);
@@ -26294,6 +26305,8 @@ var _uuid2 = _interopRequireDefault(_uuid);
 var _axios = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
 
 var _axios2 = _interopRequireDefault(_axios);
+
+var _actions = __webpack_require__(/*! ./actions/actions */ "./src/actions/actions.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -26314,11 +26327,7 @@ var PostMsg = function (_React$Component) {
 
 		var _this = _possibleConstructorReturn(this, (PostMsg.__proto__ || Object.getPrototypeOf(PostMsg)).call(this, props));
 
-		_this.state = {
-			msgText: null,
-			currentRoom: {},
-			err: false
-		};
+		_this.state = {};
 
 		_this.getText = _this.getText.bind(_this);
 		_this.postNewMessage = _this.postNewMessage.bind(_this);
@@ -26330,11 +26339,6 @@ var PostMsg = function (_React$Component) {
 		value: function getText(e) {
 			this.setState({ msgText: e.target.value });
 		}
-
-		// componentWillReceiveProps(nextProps){
-		// 	this.setState({currentRoom: nextProps.selectedRoom});
-		// }
-
 	}, {
 		key: "postNewMessage",
 		value: function postNewMessage(e) {
@@ -26343,11 +26347,11 @@ var PostMsg = function (_React$Component) {
 			var msgText = this.state.msgText;
 			if (!msgText) {
 				// alert("Enter message text!");
-				this.setState({ err: true });
+				// this.setState({err: true});
 				return;
 			}
 
-			var currentRoom = this.state.currentRoom;
+			var currentRoom = this.props.currentRoom;
 
 			_axios2.default.post(confObj.api_url_post, {
 				text: msgText,
@@ -26355,18 +26359,18 @@ var PostMsg = function (_React$Component) {
 				messageId: _uuid2.default.v4(),
 				roomId: currentRoom.id
 			}).then(function (responseObj) {
-				_this2.props.setRoom(currentRoom);
-				_this2.setState({
-					msgText: "",
-					err: false
-				});
+				_this2.props.selectRoom(currentRoom);
+				// this.setState({
+				// 	msgText: "",
+				// 	err: false
+				// }); 
 			}, function (err) {
-				_this2.setState({ err: true }, function () {
-					console.log(err);
-					_this2.setState({
-						err: true
-					});
-				});
+				// this.setState({err: true}, () => {
+				// 	console.log(err);
+				// 	this.setState({
+				// 		err: true
+				// 	}); 
+				// })
 			});
 		}
 	}, {
@@ -26451,7 +26455,15 @@ var PostMsg = function (_React$Component) {
 	return PostMsg;
 }(_react2.default.Component);
 
-exports.default = PostMsg;
+function mapStateToProps(state) {
+	return { currentRoom: state.selectedRoom || null };
+}
+
+function mapDispatchToProps(dispatch) {
+	return (0, _redux.bindActionCreators)({ selectRoom: _actions.selectRoom }, dispatch);
+}
+
+exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(PostMsg);
 
 /***/ }),
 
@@ -26592,9 +26604,7 @@ var Rooms = function (_React$Component) {
 
 		var _this = _possibleConstructorReturn(this, (Rooms.__proto__ || Object.getPrototypeOf(Rooms)).call(this, props));
 
-		_this.state = {
-			allRooms: []
-		};
+		_this.state = {};
 		return _this;
 	}
 

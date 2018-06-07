@@ -1,16 +1,17 @@
 import React from "react";
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
 import uuid from "uuid";
 import axios from "axios";
+import { selectRoom } from "./actions/actions";
 //import {Component} from "react";
 
 
-export default class PostMsg extends React.Component {
+class PostMsg extends React.Component {
 	constructor(props){
 		super(props);
+		
 		this.state = {
-			msgText: null,
-			currentRoom: {},
-			err: false
 		}
 
 		this.getText = this.getText.bind(this);
@@ -21,21 +22,17 @@ export default class PostMsg extends React.Component {
 		this.setState({msgText: e.target.value});
 	}
 
-	// componentWillReceiveProps(nextProps){
-	// 	this.setState({currentRoom: nextProps.selectedRoom});
-	// }
-
 	postNewMessage(e){
 
 		let msgText = this.state.msgText;
 		if(!msgText)
 		{
 			// alert("Enter message text!");
-			this.setState({err: true});
+			// this.setState({err: true});
 			return;
 		}
 
-		let currentRoom = this.state.currentRoom;
+		let currentRoom = this.props.currentRoom;
 
 		axios.post(confObj.api_url_post, {
 			text: msgText,
@@ -43,18 +40,18 @@ export default class PostMsg extends React.Component {
 			messageId: uuid.v4(),
 			roomId: currentRoom.id 
 			}).then( responseObj => {
-				this.props.setRoom(currentRoom)
-				this.setState({
-					msgText: "",
-					err: false
-				}); 
+				this.props.selectRoom(currentRoom)
+				// this.setState({
+				// 	msgText: "",
+				// 	err: false
+				// }); 
 			}, err => {
-			this.setState({err: true}, () => {
-				console.log(err);
-				this.setState({
-					err: true
-				}); 
-			})
+			// this.setState({err: true}, () => {
+			// 	console.log(err);
+			// 	this.setState({
+			// 		err: true
+			// 	}); 
+			// })
 		});
 	}
 
@@ -97,3 +94,13 @@ export default class PostMsg extends React.Component {
 		)
 	}
 }
+
+function mapStateToProps(state){
+	return {currentRoom: state.selectedRoom || null}
+}
+
+function mapDispatchToProps(dispatch){
+	return bindActionCreators({selectRoom: selectRoom}, dispatch);
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(PostMsg);

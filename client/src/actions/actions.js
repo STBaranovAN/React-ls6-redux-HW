@@ -55,6 +55,11 @@ export function selectRoom(currentRoom){
 					payload: messages
 				});
 			});
+
+			dispatch({
+				type: "SEL_ROOM",
+				payload: currentRoom
+			});
 	}
 };
 

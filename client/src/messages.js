@@ -6,8 +6,6 @@ class Messages extends React.Component {
 		super(props);
 
 		this.state = {
-			currentRoomName: null,
-			roomMessages: []
 		}
 	}
 
@@ -18,8 +16,8 @@ class Messages extends React.Component {
 	render() {
 
 		// let error = this.state.err || false;
-		// let roomName = this.state.currentRoomName || "Choose a room";
-		let roomMessages = this.props.roomMessages || [];
+		let roomName = this.props.currentRoomName || "Choose a room";
+		let roomMessages = this.props.allMessages || [];
 
 		// if(error) {
 		// 	return (<div className="messages">
@@ -37,7 +35,7 @@ class Messages extends React.Component {
 
 		return (
 			<div className="messages">
-				{/* <h2>{roomName}</h2> */}
+				<h2>{roomName}</h2>
 				<div className="text-right">
 					{roomMessages.map((item, index) => {
 						return <p key={index}>{item.text}</p>
@@ -49,7 +47,7 @@ class Messages extends React.Component {
 }
 
 function mapStateToProps(state){
-	return {roomMessages: state.roomMessages}
+	return {allMessages: state.roomMessages, currentRoomName: (state.selectedRoom && state.selectedRoom.name) || null}
 }
 
 export default connect(mapStateToProps)(Messages);
