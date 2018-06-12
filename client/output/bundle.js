@@ -25941,30 +25941,32 @@ var _uuid = __webpack_require__(/*! uuid */ "./node_modules/uuid/index.js");
 
 var _uuid2 = _interopRequireDefault(_uuid);
 
+var _constants = __webpack_require__(/*! ../constants/constants */ "./src/constants/constants.js");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function getRooms() {
 
 	return function (dispatch) {
 		var rooms = [];
-		_axios2.default.get("http://localhost:6060/api").then(function (responseObj) {
+		_axios2.default.get(_constants.API_URL).then(function (responseObj) {
 			if (responseObj.hasOwnProperty("data")) {
 				rooms = responseObj.data.chats;
 				if (rooms.length >= 0) {
 					dispatch({
-						type: "ALL_ROOMS",
+						type: _constants.ALL_ROOMS,
 						payload: rooms
 					});
 
 					dispatch({
-						type: "ERROR",
+						type: _constants.ERROR,
 						payload: null
 					});
 				}
 			}
 		}, function (err) {
 			dispatch({
-				type: "ERROR",
+				type: _constants.ERROR,
 				payload: { where: "getRooms", text: "Server error occured..." }
 			});
 		});
@@ -25976,7 +25978,7 @@ function selectRoom(currentRoom) {
 	return function (dispatch) {
 
 		dispatch({
-			type: "SEL_ROOM",
+			type: _constants.SEL_ROOM,
 			payload: currentRoom
 		});
 
@@ -25986,17 +25988,17 @@ function selectRoom(currentRoom) {
 			messages = responseObj.data;
 
 			dispatch({
-				type: "ROOM_MSGS",
+				type: _constants.ROOM_MSGS,
 				payload: messages
 			});
 
 			dispatch({
-				type: "ERROR",
+				type: _constants.ERROR,
 				payload: null
 			});
 		}, function (err) {
 			dispatch({
-				type: "ERROR",
+				type: _constants.ERROR,
 				payload: { where: "selectRoom", text: "Server error occured..." }
 			});
 		});
@@ -26009,22 +26011,22 @@ function addMessage(currentRoom, msgText) {
 
 		if (!msgText) {
 			dispatch({
-				type: "ERROR",
+				type: _constants.ERROR,
 				payload: { where: "addMessage", text: "Enter message text!" }
 			});
 			return;
 		}
 
-		_axios2.default.post("http://localhost:6060/api/addmessage", {
+		_axios2.default.post(_constants.API_URL_POST, {
 			text: msgText,
-			userId: 12345,
+			userId: _constants.USER_ID,
 			messageId: _uuid2.default.v4(),
 			roomId: currentRoom.id
 		}).then(function (responseObj) {
 			dispatch(selectRoom(currentRoom));
 		}, function (err) {
 			dispatch({
-				type: "ERROR",
+				type: _constants.ERROR,
 				payload: { where: "addMessage", text: "Server error occured..." }
 			});
 		});
@@ -26080,6 +26082,29 @@ _reactDom2.default.render(_react2.default.createElement(
   { store: store },
   _react2.default.createElement(_main2.default, null)
 ), document.getElementById("container"));
+
+/***/ }),
+
+/***/ "./src/constants/constants.js":
+/*!************************************!*\
+  !*** ./src/constants/constants.js ***!
+  \************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+var ALL_ROOMS = exports.ALL_ROOMS = 'ALL_ROOMS';
+var ERROR = exports.ERROR = 'ERROR';
+var ROOM_MSGS = exports.ROOM_MSGS = 'ROOM_MSGS';
+var SEL_ROOM = exports.SEL_ROOM = 'SEL_ROOM';
+var API_URL = exports.API_URL = 'http://localhost:6060/api';
+var API_URL_POST = exports.API_URL_POST = 'http://localhost:6060/api/addmessage';
+var USER_ID = exports.USER_ID = 12345;
 
 /***/ }),
 
@@ -26442,7 +26467,7 @@ var PostMsg = function (_React$Component) {
 						_react2.default.createElement(
 							"p",
 							{ className: "error" },
-							"err.text"
+							err && err.text
 						)
 					)
 				),
@@ -26533,11 +26558,13 @@ exports.default = function () {
 
 	console.log("From reducer", action);
 	switch (action.type) {
-		case "ALL_ROOMS":
+		case _constants.ALL_ROOMS:
 			return action.payload;
 	}
 	return state;
 };
+
+var _constants = __webpack_require__(/*! ../constants/constants */ "./src/constants/constants.js");
 
 /***/ }),
 
@@ -26561,11 +26588,13 @@ exports.default = function () {
 
 	console.log("From reducer", action);
 	switch (action.type) {
-		case "ERROR":
+		case _constants.ERROR:
 			return action.payload;
 	}
 	return state;
 };
+
+var _constants = __webpack_require__(/*! ../constants/constants */ "./src/constants/constants.js");
 
 /***/ }),
 
@@ -26589,11 +26618,13 @@ exports.default = function () {
 
 	console.log("From reducer", action);
 	switch (action.type) {
-		case "ROOM_MSGS":
+		case _constants.ROOM_MSGS:
 			return action.payload;
 	}
 	return state;
 };
+
+var _constants = __webpack_require__(/*! ../constants/constants */ "./src/constants/constants.js");
 
 /***/ }),
 
@@ -26617,11 +26648,13 @@ exports.default = function () {
 
 	console.log("From reducer", action);
 	switch (action.type) {
-		case "SEL_ROOM":
+		case _constants.SEL_ROOM:
 			return action.payload;
 	}
 	return state;
 };
+
+var _constants = __webpack_require__(/*! ../constants/constants */ "./src/constants/constants.js");
 
 /***/ }),
 
