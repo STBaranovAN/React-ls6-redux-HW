@@ -1,11 +1,21 @@
 import React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
-import uuid from "uuid";
-import axios from "axios";
+import Grid from '@material-ui/core/Grid';
+import Paper from '@material-ui/core/Paper';
+import Typography from '@material-ui/core/Typography';
+import TextField from '@material-ui/core/TextField';
+import Button from '@material-ui/core/Button';
 import { addMessage } from "./actions/actions";
 //import {Component} from "react";
 
+// const error = {
+// 	color: crimson
+// };
+
+const postMsgContainer = {
+	padding: 10
+};
 
 class PostMsg extends React.Component {
 	constructor(props){
@@ -58,49 +68,39 @@ class PostMsg extends React.Component {
 
 	render() {
 
-		let err = this.props.error;
-		let currentRoom = this.props.currentRoom || {};
+		let err = this.props.err;
 
 		return (
-			<div className="container msgform">
-				<div className="row">
-					<div className="col">&nbsp;</div>
-				</div>
-				<div className="row" style={ {display: (err && err.where === "addMessage") ? "block" : "none"} }>
-					<div className="col"><p className="error">{err && err.text}</p></div>
-				</div>
-				<div className="row">
-					<div className="col">
-						<textarea
-							className="form-control" 
+			<Paper elevation={4} style={postMsgContainer}>
+				<Grid container spacing={16}>
+					<Grid item xs={12}>
+						<Typography variant="headline" component="p" display={ err ? "block" : "none" }>
+							{err}
+        				</Typography>
+					</Grid>
+					<Grid item xs={12}>
+						<TextField
+							fullWidth
+							multiline
 							value={this.state.text || ''}
 							onChange={this.getText}
+							label="Enter your message"
 						>
-						</textarea>
-					</div>
-				</div>
-				<div className="row">
-					<div className="col">&nbsp;</div>
-				</div>
-				<div className="row">
-					<div className="col text-right">
-						<button className="btn btn-primary"
-							onClick={ () => { this.props.addMessage(this.props.currentRoom, this.state.text) } }
-						>
+						</TextField>
+					</Grid>
+					<Grid item xs={12}>
+						<Button variant="outlined" onClick={ () => { this.props.addMessage(this.props.currentRoom, this.state.text) } }>
 							New message
-						</button>
-					</div>
-				</div>
-				<div className="row">
-					<div className="col">&nbsp;</div>
-				</div>
-			</div>
+      					</Button>
+					</Grid>
+				</Grid>
+			</Paper>
 		)
 	}
 }
 
 function mapStateToProps(state){
-	return {currentRoom: state.selectedRoom || null, error: state.errorObj}
+	return {currentRoom: state.postmsg.selectedRoom || null, err: state.postmsg.err}
 }
 
 function mapDispatchToProps(dispatch){

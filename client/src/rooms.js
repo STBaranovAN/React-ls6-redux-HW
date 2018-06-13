@@ -1,10 +1,16 @@
 import React from "react";
 import { connect } from "react-redux";
+import Paper from '@material-ui/core/Paper';
+import Typography from '@material-ui/core/Typography';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
 import { bindActionCreators } from "redux";
 import { getRooms, selectRoom } from "./actions/actions";
-import Room from "./item";
-import Messages from "./messages";
-import PostMsg from "./postmsg";
+
+const roomsContainer = {
+	padding: 10
+};
 
 class Rooms extends React.Component {
 	constructor(props){
@@ -14,49 +20,60 @@ class Rooms extends React.Component {
 		}
 	}
 
-	componentDidMount(){
+	componentDidMount() {
 		this.props.getRooms();
 	}
 	
 	render() {
-		let err = this.props.error;
-		let allRooms = this.props.chatRooms || [];
+		let err = this.props.chatRooms.err;
+		let allRooms = this.props.chatRooms.allRooms || [];
 
-		if(err && err.where === "getRooms")		
+		if(err)		
 		{
-			return (<div className="rooms">
-						<h2>{err.text}</h2>
-					</div>
+			return (
+				<Paper elevation={4} style={roomsContainer}>
+					<Typography variant="headline" component="h3">
+						{err}
+        			</Typography>
+				</Paper>	
 			)
 		}
 		
-		if(allRooms.length == 0) {
-			return (<div className="rooms">
-						<h2>No rooms...</h2>
-					</div>
-			)
-		}
-
-		return (
-			<div className="rooms">
-						<ul>
-							{allRooms.map((item, index) => {
-								return <Room
-										key={index} name={item.name} 
+		if(allRooms.length > 0) {
+			return (
+				<Paper elevation={4} style={roomsContainer}>
+					<Typography variant="headline" component="h3">
+						All rooms:
+					</Typography>
+					<List component="nav">
+						{allRooms.map((item, index) => {
+							return <ListItem
+										button
+										divider
+										key={index} 
 										onClick={() => { 
-											this.props.selectRoom(item);
-										}}
-									/>
-							})
-						}
-						</ul>	
-			</div>
-		)
+										this.props.selectRoom(item);
+										}}>
+											<ListItemText primary={item.name}/>
+									</ListItem>
+								})
+							}
+					</List>
+				</Paper>
+			)
+		} else {
+			return (
+				<Paper elevation={4} style={roomsContainer}>
+					<Typography variant="headline" component="h3">
+						"No rooms..."
+					</Typography>
+				</Paper>)
+		}
 	}
 }
 
 function mapStateToProps(state){
-	return {chatRooms: state.allRooms, error: state.errorObj}
+	return {chatRooms: state.rooms}
 }
 
 function mapDispatchToProps(dispatch){

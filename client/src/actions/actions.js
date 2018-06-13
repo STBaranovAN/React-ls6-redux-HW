@@ -14,19 +14,14 @@ export function getRooms(){
 						{
 							dispatch({
 								type: ALL_ROOMS,
-								payload: rooms
-							});
-
-							dispatch({
-								type: ERROR,
-								payload: null
+								payload: {allRooms: rooms, err: null}
 							});
 						}
 					}
 			}, err => {
 				dispatch({
-					type: ERROR,
-					payload: { where: "getRooms", text: "Server error occured..." }
+					type: ALL_ROOMS,
+					payload: {allRooms: null, err: "Server error occured..."}
 				});
 			});
 		}
@@ -36,11 +31,6 @@ export function selectRoom(currentRoom){
 
 	return function(dispatch){
 
-		dispatch({
-			type: SEL_ROOM,
-			payload: currentRoom
-		});
-
 		let messages = [];
 			axios.get(`http://localhost:6060/api/${currentRoom.id}/messages`).then( responseObj => {
 
@@ -48,18 +38,13 @@ export function selectRoom(currentRoom){
 
 				dispatch({
 					type: ROOM_MSGS,
-					payload: messages
-				});
-
-				dispatch({
-					type: ERROR,
-					payload: null
+					payload: { selectedRoom: currentRoom, roomMessages: messages, err: null }
 				});
 
 			}, err => {
 				dispatch({
-					type: ERROR,
-					payload: { where: "selectRoom", text: "Server error occured..." }
+					type: ROOM_MSGS,
+					payload: { selectedRoom: currentRoom, roomMessages: messages, err: "Server error occured..." }
 				});
 			});
 	}
@@ -73,7 +58,7 @@ export function addMessage(currentRoom, msgText){
 		{
 			dispatch({
 				type: ERROR,
-				payload: { where: "addMessage", text: "Enter message text!" }
+				payload: { text: "Enter message text!" }
 			});
 			return;
 		}
@@ -85,10 +70,15 @@ export function addMessage(currentRoom, msgText){
 			roomId: currentRoom.id 
 			}).then( responseObj => {
 				dispatch(selectRoom(currentRoom));
+
+				dispatch({
+					type: ERROR,
+					payload: null
+				});
 			}, err => {
 				dispatch({
 					type: ERROR,
-					payload: { where: "addMessage", text: "Server error occured..." }
+					payload: { text: "Server error occured..." }
 				});
 			});
 	}
