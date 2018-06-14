@@ -46111,9 +46111,12 @@ Object.defineProperty(exports, "__esModule", {
 var ALL_ROOMS = exports.ALL_ROOMS = 'ALL_ROOMS';
 var ROOM_MSGS = exports.ROOM_MSGS = 'ROOM_MSGS';
 var POST_MSG = exports.POST_MSG = 'POST_MSG';
+
 var API_URL = exports.API_URL = 'http://localhost:6060/api';
 var API_URL_POST = exports.API_URL_POST = 'http://localhost:6060/api/addmessage';
 var USER_ID = exports.USER_ID = 12345;
+
+var rooms_title = exports.rooms_title = "All rooms:";
 var server_error_msg = exports.server_error_msg = "Server error occured...";
 var emty_text_error_msg = exports.emty_text_error_msg = "Enter message text!";
 var no_room_msg = exports.no_room_msg = "No rooms...";
@@ -46701,7 +46704,7 @@ var Rooms = function (_React$Component) {
 					_react2.default.createElement(
 						_Typography2.default,
 						{ variant: "headline", component: "h3" },
-						"All rooms:"
+						_constants.rooms_title
 					),
 					_react2.default.createElement(
 						_List2.default,
@@ -46779,8 +46782,6 @@ var _postmsgreducer = __webpack_require__(/*! ./reducers/postmsgreducer */ "./sr
 var _postmsgreducer2 = _interopRequireDefault(_postmsgreducer);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-//import authReducer from "./authreducer";
 
 var rootReducer = (0, _redux.combineReducers)({
 	rooms: _allroomsreducer2.default,

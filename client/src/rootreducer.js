@@ -2,7 +2,6 @@ import { combineReducers } from "redux";
 import allRoomsReducer from "./reducers/allroomsreducer";
 import msgReducer from "./reducers/msgreducer";
 import postMsgReducer from "./reducers/postmsgreducer";
-//import authReducer from "./authreducer";
 
 let rootReducer = combineReducers({
 	rooms: allRoomsReducer,

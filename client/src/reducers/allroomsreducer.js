@@ -6,5 +6,5 @@ export default function(state = {allRooms: null, err: null}, action){
 		case ALL_ROOMS:
 		return Object.assign({}, state, action.payload);
 	}
-	return state
+	return state;
 }

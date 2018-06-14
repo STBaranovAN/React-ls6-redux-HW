@@ -6,5 +6,5 @@ export default function(state = { selectedRoom: null, roomMessages: null, err: n
 		case ROOM_MSGS:
 			return Object.assign({}, state, action.payload);
 	}
-	return state
+	return state;
 }
