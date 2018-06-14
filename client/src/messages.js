@@ -5,6 +5,7 @@ import Typography from '@material-ui/core/Typography';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
+import { no_msgs_msg, choose_room_msg } from "./constants/constants";
 
 const messagesContainer = {
 	padding: 10
@@ -25,12 +26,12 @@ class Messages extends React.Component {
 	render() {
 
 		let err = this.props.msgs.err;
-		let roomName = this.props.msgs.selectedRoom && this.props.msgs.selectedRoom.name || "Choose a room";
+		let roomName = this.props.msgs.selectedRoom && this.props.msgs.selectedRoom.name || choose_room_msg;
 		let roomMessages = this.props.msgs.roomMessages || [];
 
 		if(err) {
 			return (<Paper elevation={4} style={messagesContainer}>
-						<Typography variant="headline" component="h3">{err}</Typography>
+						<Typography variant="headline" component="h3" color="error">{err}</Typography>
 					</Paper>
 			)
 		}
@@ -53,7 +54,7 @@ class Messages extends React.Component {
 		} else {
 			return (
 				(<Paper elevation={4} style={messagesContainer}>
-					<Typography variant="headline" component="h3">No messages in room...</Typography>
+					<Typography variant="headline" component="h3">{no_msgs_msg}</Typography>
 				</Paper>
 				)
 			)

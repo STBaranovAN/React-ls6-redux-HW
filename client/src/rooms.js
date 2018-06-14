@@ -7,6 +7,7 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import { bindActionCreators } from "redux";
 import { getRooms, selectRoom } from "./actions/actions";
+import { no_room_msg } from "./constants/constants";
 
 const roomsContainer = {
 	padding: 10
@@ -32,7 +33,7 @@ class Rooms extends React.Component {
 		{
 			return (
 				<Paper elevation={4} style={roomsContainer}>
-					<Typography variant="headline" component="h3">
+					<Typography variant="headline" component="h3" color="error">
 						{err}
         			</Typography>
 				</Paper>	
@@ -65,7 +66,7 @@ class Rooms extends React.Component {
 			return (
 				<Paper elevation={4} style={roomsContainer}>
 					<Typography variant="headline" component="h3">
-						"No rooms..."
+						{no_room_msg}
 					</Typography>
 				</Paper>)
 		}

@@ -1,4 +1,4 @@
-import { ROOM_MSGS, ERROR } from "../constants/constants";
+import { ROOM_MSGS } from "../constants/constants";
 
 export default function(state = { selectedRoom: null, roomMessages: null, err: null }, action){
 	console.log("From reducer", action);

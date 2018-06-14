@@ -1,6 +1,6 @@
 import axios from "axios";
 import uuid from "uuid";
-import { ALL_ROOMS, ERROR, SEL_ROOM, ROOM_MSGS, API_URL, API_URL_POST, USER_ID } from "../constants/constants";
+import { ALL_ROOMS, ROOM_MSGS, POST_MSG, API_URL, API_URL_POST, USER_ID, server_error_msg, emty_text_error_msg } from "../constants/constants";
 
 export function getRooms(){
 
@@ -19,9 +19,10 @@ export function getRooms(){
 						}
 					}
 			}, err => {
+				console.log(`An error occured: ${err}`);
 				dispatch({
 					type: ALL_ROOMS,
-					payload: {allRooms: null, err: "Server error occured..."}
+					payload: {allRooms: null, err: server_error_msg}
 				});
 			});
 		}
@@ -30,6 +31,11 @@ export function getRooms(){
 export function selectRoom(currentRoom){
 
 	return function(dispatch){
+
+		dispatch({
+			type: POST_MSG,
+			payload: null
+		});
 
 		let messages = [];
 			axios.get(`http://localhost:6060/api/${currentRoom.id}/messages`).then( responseObj => {
@@ -40,11 +46,11 @@ export function selectRoom(currentRoom){
 					type: ROOM_MSGS,
 					payload: { selectedRoom: currentRoom, roomMessages: messages, err: null }
 				});
-
 			}, err => {
+				console.log(`An error occured: ${err}`);
 				dispatch({
 					type: ROOM_MSGS,
-					payload: { selectedRoom: currentRoom, roomMessages: messages, err: "Server error occured..." }
+					payload: { selectedRoom: currentRoom, roomMessages: messages, err: server_error_msg }
 				});
 			});
 	}
@@ -57,10 +63,15 @@ export function addMessage(currentRoom, msgText){
 		if(!msgText)
 		{
 			dispatch({
-				type: ERROR,
-				payload: { text: "Enter message text!" }
+				type: POST_MSG,
+				payload: emty_text_error_msg
 			});
 			return;
+		} else {
+			dispatch({
+				type: POST_MSG,
+				payload: null
+			});
 		}
 
 		axios.post(API_URL_POST, {
@@ -70,15 +81,11 @@ export function addMessage(currentRoom, msgText){
 			roomId: currentRoom.id 
 			}).then( responseObj => {
 				dispatch(selectRoom(currentRoom));
-
-				dispatch({
-					type: ERROR,
-					payload: null
-				});
 			}, err => {
+				console.log(`An error occured: ${err}`);
 				dispatch({
-					type: ERROR,
-					payload: { text: "Server error occured..." }
+					type: POST_MSG,
+					payload: server_error_msg
 				});
 			});
 	}

@@ -45973,9 +45973,10 @@ function getRooms() {
 				}
 			}
 		}, function (err) {
+			console.log("An error occured: " + err);
 			dispatch({
 				type: _constants.ALL_ROOMS,
-				payload: { allRooms: null, err: "Server error occured..." }
+				payload: { allRooms: null, err: _constants.server_error_msg }
 			});
 		});
 	};
@@ -45984,6 +45985,11 @@ function getRooms() {
 function selectRoom(currentRoom) {
 
 	return function (dispatch) {
+
+		dispatch({
+			type: _constants.POST_MSG,
+			payload: null
+		});
 
 		var messages = [];
 		_axios2.default.get("http://localhost:6060/api/" + currentRoom.id + "/messages").then(function (responseObj) {
@@ -45995,9 +46001,10 @@ function selectRoom(currentRoom) {
 				payload: { selectedRoom: currentRoom, roomMessages: messages, err: null }
 			});
 		}, function (err) {
+			console.log("An error occured: " + err);
 			dispatch({
 				type: _constants.ROOM_MSGS,
-				payload: { selectedRoom: currentRoom, roomMessages: messages, err: "Server error occured..." }
+				payload: { selectedRoom: currentRoom, roomMessages: messages, err: _constants.server_error_msg }
 			});
 		});
 	};
@@ -46009,10 +46016,15 @@ function addMessage(currentRoom, msgText) {
 
 		if (!msgText) {
 			dispatch({
-				type: _constants.ERROR,
-				payload: { text: "Enter message text!" }
+				type: _constants.POST_MSG,
+				payload: _constants.emty_text_error_msg
 			});
 			return;
+		} else {
+			dispatch({
+				type: _constants.POST_MSG,
+				payload: null
+			});
 		}
 
 		_axios2.default.post(_constants.API_URL_POST, {
@@ -46022,15 +46034,11 @@ function addMessage(currentRoom, msgText) {
 			roomId: currentRoom.id
 		}).then(function (responseObj) {
 			dispatch(selectRoom(currentRoom));
-
-			dispatch({
-				type: _constants.ERROR,
-				payload: null
-			});
 		}, function (err) {
+			console.log("An error occured: " + err);
 			dispatch({
-				type: _constants.ERROR,
-				payload: { text: "Server error occured..." }
+				type: _constants.POST_MSG,
+				payload: _constants.server_error_msg
 			});
 		});
 	};
@@ -46102,11 +46110,17 @@ Object.defineProperty(exports, "__esModule", {
 });
 var ALL_ROOMS = exports.ALL_ROOMS = 'ALL_ROOMS';
 var ROOM_MSGS = exports.ROOM_MSGS = 'ROOM_MSGS';
-var SEL_ROOM = exports.SEL_ROOM = 'SEL_ROOM';
-var ERROR = exports.ERROR = 'ERROR';
+var POST_MSG = exports.POST_MSG = 'POST_MSG';
 var API_URL = exports.API_URL = 'http://localhost:6060/api';
 var API_URL_POST = exports.API_URL_POST = 'http://localhost:6060/api/addmessage';
 var USER_ID = exports.USER_ID = 12345;
+var server_error_msg = exports.server_error_msg = "Server error occured...";
+var emty_text_error_msg = exports.emty_text_error_msg = "Enter message text!";
+var no_room_msg = exports.no_room_msg = "No rooms...";
+var no_msgs_msg = exports.no_msgs_msg = "No messages in room...";
+var choose_room_msg = exports.choose_room_msg = "Enter message text!";
+var btn_new_msg = exports.btn_new_msg = "New message";
+var tf_new_msg = exports.tf_new_msg = "Enter your message";
 
 /***/ }),
 
@@ -46133,10 +46147,6 @@ var _react2 = _interopRequireDefault(_react);
 var _Grid = __webpack_require__(/*! @material-ui/core/Grid */ "./node_modules/@material-ui/core/Grid/index.js");
 
 var _Grid2 = _interopRequireDefault(_Grid);
-
-var _Paper = __webpack_require__(/*! @material-ui/core/Paper */ "./node_modules/@material-ui/core/Paper/index.js");
-
-var _Paper2 = _interopRequireDefault(_Paper);
 
 var _rooms = __webpack_require__(/*! ./rooms */ "./src/rooms.js");
 
@@ -46174,10 +46184,10 @@ var Main = function (_React$Component) {
 	}
 
 	_createClass(Main, [{
-		key: 'render',
+		key: "render",
 		value: function render() {
 			return _react2.default.createElement(
-				'div',
+				"div",
 				{ style: mainContainer },
 				_react2.default.createElement(
 					_Grid2.default,
@@ -46185,17 +46195,13 @@ var Main = function (_React$Component) {
 					_react2.default.createElement(
 						_Grid2.default,
 						{ item: true, xs: 12, sm: 6 },
-						_react2.default.createElement(
-							_Paper2.default,
-							{ elevation: 4 },
-							_react2.default.createElement(_rooms2.default, null)
-						)
+						_react2.default.createElement(_rooms2.default, null)
 					),
 					_react2.default.createElement(
 						_Grid2.default,
 						{ item: true, xs: 12, sm: 6 },
 						_react2.default.createElement(_messages2.default, null),
-						_react2.default.createElement('br', null),
+						_react2.default.createElement("br", null),
 						_react2.default.createElement(_postmsg2.default, null)
 					)
 				)
@@ -46252,6 +46258,8 @@ var _ListItemText = __webpack_require__(/*! @material-ui/core/ListItemText */ ".
 
 var _ListItemText2 = _interopRequireDefault(_ListItemText);
 
+var _constants = __webpack_require__(/*! ./constants/constants */ "./src/constants/constants.js");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -46286,7 +46294,7 @@ var Messages = function (_React$Component) {
 		value: function render() {
 
 			var err = this.props.msgs.err;
-			var roomName = this.props.msgs.selectedRoom && this.props.msgs.selectedRoom.name || "Choose a room";
+			var roomName = this.props.msgs.selectedRoom && this.props.msgs.selectedRoom.name || _constants.choose_room_msg;
 			var roomMessages = this.props.msgs.roomMessages || [];
 
 			if (err) {
@@ -46295,7 +46303,7 @@ var Messages = function (_React$Component) {
 					{ elevation: 4, style: messagesContainer },
 					_react2.default.createElement(
 						_Typography2.default,
-						{ variant: "headline", component: "h3" },
+						{ variant: "headline", component: "h3", color: "error" },
 						err
 					)
 				);
@@ -46332,7 +46340,7 @@ var Messages = function (_React$Component) {
 					_react2.default.createElement(
 						_Typography2.default,
 						{ variant: "headline", component: "h3" },
-						"No messages in room..."
+						_constants.no_msgs_msg
 					)
 				);
 			}
@@ -46396,6 +46404,8 @@ var _Button2 = _interopRequireDefault(_Button);
 
 var _actions = __webpack_require__(/*! ./actions/actions */ "./src/actions/actions.js");
 
+var _constants = __webpack_require__(/*! ./constants/constants */ "./src/constants/constants.js");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -46405,10 +46415,6 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 //import {Component} from "react";
-
-// const error = {
-// 	color: crimson
-// };
 
 var postMsgContainer = {
 	padding: 10
@@ -46427,7 +46433,6 @@ var PostMsg = function (_React$Component) {
 		};
 
 		_this.getText = _this.getText.bind(_this);
-		// this.postNewMessage = this.postNewMessage.bind(this);
 		return _this;
 	}
 
@@ -46436,40 +46441,6 @@ var PostMsg = function (_React$Component) {
 		value: function getText(e) {
 			this.setState({ text: e.target.value });
 		}
-
-		// postNewMessage(e){
-
-		// 	let msgText = this.state.msgText;
-		// 	if(!msgText)
-		// 	{
-		// 		// alert("Enter message text!");
-		// 		// this.setState({err: true});
-		// 		return;
-		// 	}
-
-		// 	let currentRoom = this.props.currentRoom;
-
-		// 	axios.post(confObj.api_url_post, {
-		// 		text: msgText,
-		// 		userId: confObj.userId,
-		// 		messageId: uuid.v4(),
-		// 		roomId: currentRoom.id 
-		// 		}).then( responseObj => {
-		// 			this.props.selectRoom(currentRoom)
-		// 			// this.setState({
-		// 			// 	msgText: "",
-		// 			// 	err: false
-		// 			// }); 
-		// 		}, err => {
-		// 		// this.setState({err: true}, () => {
-		// 		// 	console.log(err);
-		// 		// 	this.setState({
-		// 		// 		err: true
-		// 		// 	}); 
-		// 		// })
-		// 	});
-		// }
-
 	}, {
 		key: "render",
 		value: function render() {
@@ -46488,7 +46459,7 @@ var PostMsg = function (_React$Component) {
 						{ item: true, xs: 12 },
 						_react2.default.createElement(
 							_Typography2.default,
-							{ variant: "headline", component: "p", display: err ? "block" : "none" },
+							{ variant: "headline", color: "error", component: "p", display: err ? "block" : "none" },
 							err
 						)
 					),
@@ -46500,7 +46471,7 @@ var PostMsg = function (_React$Component) {
 							multiline: true,
 							value: this.state.text || '',
 							onChange: this.getText,
-							label: "Enter your message"
+							label: _constants.tf_new_msg
 						})
 					),
 					_react2.default.createElement(
@@ -46511,7 +46482,7 @@ var PostMsg = function (_React$Component) {
 							{ variant: "outlined", onClick: function onClick() {
 									_this2.props.addMessage(_this2.props.currentRoom, _this2.state.text);
 								} },
-							"New message"
+							_constants.btn_new_msg
 						)
 					)
 				)
@@ -46523,7 +46494,7 @@ var PostMsg = function (_React$Component) {
 }(_react2.default.Component);
 
 function mapStateToProps(state) {
-	return { currentRoom: state.postmsg.selectedRoom || null, err: state.postmsg.err };
+	return { currentRoom: state.msgs.selectedRoom || null, err: state.postmsg.err };
 }
 
 function mapDispatchToProps(dispatch) {
@@ -46609,53 +46580,12 @@ Object.defineProperty(exports, "__esModule", {
 });
 
 exports.default = function () {
-	var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+	var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : { err: null };
 	var action = arguments[1];
 
 	console.log("From reducer", action);
 	switch (action.type) {
-		case _constants.ERROR:
-			return {
-				err: action.payload
-			};
-
-		default:
-			return {
-				err: null
-			};
-	}
-	return state;
-};
-
-var _constants = __webpack_require__(/*! ../constants/constants */ "./src/constants/constants.js");
-
-/***/ }),
-
-/***/ "./src/reducers/selroomreducer.js":
-/*!****************************************!*\
-  !*** ./src/reducers/selroomreducer.js ***!
-  \****************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-
-exports.default = function () {
-	var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
-	var action = arguments[1];
-
-	console.log("From reducer", action);
-	switch (action.type) {
-		case _constants.SEL_ROOM:
-			return {
-				err: null
-			};
-		case _constants.ERROR:
+		case _constants.POST_MSG:
 			return {
 				err: action.payload
 			};
@@ -46713,6 +46643,8 @@ var _redux = __webpack_require__(/*! redux */ "./node_modules/redux/es/redux.js"
 
 var _actions = __webpack_require__(/*! ./actions/actions */ "./src/actions/actions.js");
 
+var _constants = __webpack_require__(/*! ./constants/constants */ "./src/constants/constants.js");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -46756,7 +46688,7 @@ var Rooms = function (_React$Component) {
 					{ elevation: 4, style: roomsContainer },
 					_react2.default.createElement(
 						_Typography2.default,
-						{ variant: "headline", component: "h3" },
+						{ variant: "headline", component: "h3", color: "error" },
 						err
 					)
 				);
@@ -46796,7 +46728,7 @@ var Rooms = function (_React$Component) {
 					_react2.default.createElement(
 						_Typography2.default,
 						{ variant: "headline", component: "h3" },
-						"\"No rooms...\""
+						_constants.no_room_msg
 					)
 				);
 			}
@@ -46838,10 +46770,6 @@ var _allroomsreducer = __webpack_require__(/*! ./reducers/allroomsreducer */ "./
 
 var _allroomsreducer2 = _interopRequireDefault(_allroomsreducer);
 
-var _selroomreducer = __webpack_require__(/*! ./reducers/selroomreducer */ "./src/reducers/selroomreducer.js");
-
-var _selroomreducer2 = _interopRequireDefault(_selroomreducer);
-
 var _msgreducer = __webpack_require__(/*! ./reducers/msgreducer */ "./src/reducers/msgreducer.js");
 
 var _msgreducer2 = _interopRequireDefault(_msgreducer);
@@ -46856,7 +46784,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var rootReducer = (0, _redux.combineReducers)({
 	rooms: _allroomsreducer2.default,
-	selroom: _selroomreducer2.default,
 	msgs: _msgreducer2.default,
 	postmsg: _postmsgreducer2.default
 
